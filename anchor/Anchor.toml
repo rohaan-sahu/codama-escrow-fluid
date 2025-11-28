@@ -6,7 +6,7 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-codamaescrow = "Count3AcZucFDPSFBAeHkQ6AvttieKUkyJ8HiQGhQwe"
+codamaescrow = "A7nHLnjV7dRc8coHJEkjSk7cTiPopYHahK4zpv3Q3cw7"
 
 [registry]
 url = "https://api.apr.dev"
