@@ -1,5 +1,7 @@
 # codama-escrow
 
+** I have used pnpm for this one
+
 This is a Next.js app containing:
 
 - Tailwind and Shadcn UI for styling
