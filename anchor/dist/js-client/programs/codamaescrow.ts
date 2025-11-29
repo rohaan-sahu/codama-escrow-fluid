@@ -12,20 +12,18 @@ import {
   getBytesEncoder,
   type Address,
   type ReadonlyUint8Array,
-} from 'gill';
+} from '@solana/kit';
 import {
-  type ParsedCloseInstruction,
-  type ParsedDecrementInstruction,
-  type ParsedIncrementInstruction,
-  type ParsedInitializeInstruction,
-  type ParsedSetInstruction,
+  type ParsedMakeOfferInstruction,
+  type ParsedRefundOfferInstruction,
+  type ParsedTakeOfferInstruction,
 } from '../instructions';
 
 export const CODAMAESCROW_PROGRAM_ADDRESS =
   'A7nHLnjV7dRc8coHJEkjSk7cTiPopYHahK4zpv3Q3cw7' as Address<'A7nHLnjV7dRc8coHJEkjSk7cTiPopYHahK4zpv3Q3cw7'>;
 
 export enum CodamaescrowAccount {
-  Codamaescrow,
+  Offer,
 }
 
 export function identifyCodamaescrowAccount(
@@ -36,12 +34,12 @@ export function identifyCodamaescrowAccount(
     containsBytes(
       data,
       fixEncoderSize(getBytesEncoder(), 8).encode(
-        new Uint8Array([16, 47, 213, 134, 0, 142, 193, 59])
+        new Uint8Array([215, 88, 60, 71, 170, 162, 73, 229])
       ),
       0
     )
   ) {
-    return CodamaescrowAccount.Codamaescrow;
+    return CodamaescrowAccount.Offer;
   }
   throw new Error(
     'The provided account could not be identified as a codamaescrow account.'
@@ -49,11 +47,9 @@ export function identifyCodamaescrowAccount(
 }
 
 export enum CodamaescrowInstruction {
-  Close,
-  Decrement,
-  Increment,
-  Initialize,
-  Set,
+  MakeOffer,
+  RefundOffer,
+  TakeOffer,
 }
 
 export function identifyCodamaescrowInstruction(
@@ -64,56 +60,34 @@ export function identifyCodamaescrowInstruction(
     containsBytes(
       data,
       fixEncoderSize(getBytesEncoder(), 8).encode(
-        new Uint8Array([98, 165, 201, 177, 108, 65, 206, 96])
+        new Uint8Array([214, 98, 97, 35, 59, 12, 44, 178])
       ),
       0
     )
   ) {
-    return CodamaescrowInstruction.Close;
+    return CodamaescrowInstruction.MakeOffer;
   }
   if (
     containsBytes(
       data,
       fixEncoderSize(getBytesEncoder(), 8).encode(
-        new Uint8Array([106, 227, 168, 59, 248, 27, 150, 101])
+        new Uint8Array([171, 18, 70, 32, 244, 121, 60, 75])
       ),
       0
     )
   ) {
-    return CodamaescrowInstruction.Decrement;
+    return CodamaescrowInstruction.RefundOffer;
   }
   if (
     containsBytes(
       data,
       fixEncoderSize(getBytesEncoder(), 8).encode(
-        new Uint8Array([11, 18, 104, 9, 104, 174, 59, 33])
+        new Uint8Array([128, 156, 242, 207, 237, 192, 103, 240])
       ),
       0
     )
   ) {
-    return CodamaescrowInstruction.Increment;
-  }
-  if (
-    containsBytes(
-      data,
-      fixEncoderSize(getBytesEncoder(), 8).encode(
-        new Uint8Array([175, 175, 109, 31, 13, 152, 155, 237])
-      ),
-      0
-    )
-  ) {
-    return CodamaescrowInstruction.Initialize;
-  }
-  if (
-    containsBytes(
-      data,
-      fixEncoderSize(getBytesEncoder(), 8).encode(
-        new Uint8Array([198, 51, 53, 241, 116, 29, 126, 194])
-      ),
-      0
-    )
-  ) {
-    return CodamaescrowInstruction.Set;
+    return CodamaescrowInstruction.TakeOffer;
   }
   throw new Error(
     'The provided instruction could not be identified as a codamaescrow instruction.'
@@ -124,17 +98,11 @@ export type ParsedCodamaescrowInstruction<
   TProgram extends string = 'A7nHLnjV7dRc8coHJEkjSk7cTiPopYHahK4zpv3Q3cw7',
 > =
   | ({
-      instructionType: CodamaescrowInstruction.Close;
-    } & ParsedCloseInstruction<TProgram>)
+      instructionType: CodamaescrowInstruction.MakeOffer;
+    } & ParsedMakeOfferInstruction<TProgram>)
   | ({
-      instructionType: CodamaescrowInstruction.Decrement;
-    } & ParsedDecrementInstruction<TProgram>)
+      instructionType: CodamaescrowInstruction.RefundOffer;
+    } & ParsedRefundOfferInstruction<TProgram>)
   | ({
-      instructionType: CodamaescrowInstruction.Increment;
-    } & ParsedIncrementInstruction<TProgram>)
-  | ({
-      instructionType: CodamaescrowInstruction.Initialize;
-    } & ParsedInitializeInstruction<TProgram>)
-  | ({
-      instructionType: CodamaescrowInstruction.Set;
-    } & ParsedSetInstruction<TProgram>);
+      instructionType: CodamaescrowInstruction.TakeOffer;
+    } & ParsedTakeOfferInstruction<TProgram>);
