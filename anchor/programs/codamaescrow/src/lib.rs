@@ -1,6 +1,14 @@
 #![allow(clippy::result_large_err)]
+#![allow(unexpected_cfgs)]
+// See https://solana.stackexchange.com/questions/17777
 
 use anchor_lang::prelude::*;
+
+use handlers::*;
+
+pub mod error;
+pub mod handlers;
+pub mod state;
 
 declare_id!("A7nHLnjV7dRc8coHJEkjSk7cTiPopYHahK4zpv3Q3cw7");
 
@@ -8,63 +16,21 @@ declare_id!("A7nHLnjV7dRc8coHJEkjSk7cTiPopYHahK4zpv3Q3cw7");
 pub mod codamaescrow {
     use super::*;
 
-    pub fn close(_ctx: Context<CloseCodamaescrow>) -> Result<()> {
-        Ok(())
+    pub fn make_offer(
+        context: Context<MakeOffer>,
+        id: u64,
+        token_a_offered_amount: u64,
+        token_b_wanted_amount: u64,
+    ) -> Result<()> {
+        handlers::make_offer::make_offer(context, id, token_a_offered_amount, token_b_wanted_amount)
     }
 
-    pub fn decrement(ctx: Context<Update>) -> Result<()> {
-        ctx.accounts.codamaescrow.count = ctx.accounts.codamaescrow.count.checked_sub(1).unwrap();
-        Ok(())
+    pub fn take_offer(context: Context<TakeOffer>) -> Result<()> {
+        handlers::take_offer::take_offer(context)
     }
 
-    pub fn increment(ctx: Context<Update>) -> Result<()> {
-        ctx.accounts.codamaescrow.count = ctx.accounts.codamaescrow.count.checked_add(1).unwrap();
-        Ok(())
+    pub fn refund_offer(context: Context<RefundOffer>) -> Result<()> {
+        handlers::refund_offer::refund_offer(context)
     }
 
-    pub fn initialize(_ctx: Context<InitializeCodamaescrow>) -> Result<()> {
-        Ok(())
-    }
-
-    pub fn set(ctx: Context<Update>, value: u8) -> Result<()> {
-        ctx.accounts.codamaescrow.count = value.clone();
-        Ok(())
-    }
-}
-
-#[derive(Accounts)]
-pub struct InitializeCodamaescrow<'info> {
-    #[account(mut)]
-    pub payer: Signer<'info>,
-
-    #[account(
-  init,
-  space = 8 + Codamaescrow::INIT_SPACE,
-  payer = payer
-    )]
-    pub codamaescrow: Account<'info, Codamaescrow>,
-    pub system_program: Program<'info, System>,
-}
-#[derive(Accounts)]
-pub struct CloseCodamaescrow<'info> {
-    #[account(mut)]
-    pub payer: Signer<'info>,
-
-    #[account(
-  mut,
-  close = payer, // close account and return lamports to payer
-    )]
-    pub codamaescrow: Account<'info, Codamaescrow>,
-}
-
-#[derive(Accounts)]
-pub struct Update<'info> {
-    #[account(mut)]
-    pub codamaescrow: Account<'info, Codamaescrow>,
-}
-
-#[account]
-#[derive(InitSpace)]
-pub struct Codamaescrow {
-    count: u8,
 }
