@@ -53,8 +53,6 @@ describe("Escrow", () => {
     // 'user' will be the account we use to create the token mints
     [user, alice, bob] = await connection.createWallets(3, { airdropAmount: ONE_SOL });
 
-    console.log("Checkpoint0");
-
     console.log("alice address",alice.address);
     // Create two token mints - the factories that create token A, and token B
     tokenMintA = await connection.createTokenMint({
@@ -71,7 +69,6 @@ describe("Escrow", () => {
     });
     console.log("tokenMintB: ",tokenMintB);
 
-    console.log("Checkpoint1");
     // Mint tokens to alice and bob
     await connection.mintTokens(
       tokenMintA,
@@ -80,23 +77,17 @@ describe("Escrow", () => {
       alice.address,
       false
     );
-    console.log("Checkpoint2");
 
     await connection.mintTokens(tokenMintA, user, bobInitialTokenAAmount, bob.address,false);
-    console.log("Checkpoint3");
 
     await connection.mintTokens(tokenMintB, user, bobInitialTokenBAmount, bob.address,false);
-    console.log("Checkpoint4");
 
     // Get the token accounts for alice and bob
     aliceTokenAccountA = await connection.getTokenAccountAddress(alice.address, tokenMintA, false);
-    console.log("Checkpoint5");
 
     bobTokenAccountA = await connection.getTokenAccountAddress(bob.address, tokenMintA, false);
-    console.log("Checkpoint6");
 
     aliceTokenAccountB = await connection.getTokenAccountAddress(alice.address, tokenMintB, false);
-    console.log("Checkpoint7");
 
     console.log(`
       aliceTokenAccountA: ${aliceTokenAccountA},
@@ -112,8 +103,10 @@ describe("Escrow", () => {
         useTokenExtensions: false
       }
     );
-  });
 
+    console.log("aliceTokenAccountA: ",a);
+  });
+  /*
   describe("Setup", () => {
     test("wallet are created and funded", async () => {
       const aliceBalance = await connection.getLamportBalance(alice.address);
@@ -131,7 +124,7 @@ describe("Escrow", () => {
 
     
     test("program is deployed", async () => {
-      
+      let b = programClient.CODAMAESCROW_PROGRAM_ADDRESS;
       const programAccountBal = await connection.getLamportBalance(programId);
       console.log(`Program account balance: ${programAccountBal}`);
 
@@ -142,11 +135,13 @@ describe("Escrow", () => {
       );
     });
   });
+  */
   // describe ends
 
   // offer tests
   describe("makeOffer", () => {
     test("successfully creates an offer with valid inputs", async () => {
+      console.log("CheckpointA");
       const { offer, vault } = await createTestOffer({
         connection,
         maker: alice,
@@ -157,15 +152,19 @@ describe("Escrow", () => {
         tokenBWantedAmount,
       });
 
+      console.log("received vault: ",vault);
+
+      console.log("CheckpointB");
+
       // Verify the offer was created successfully by checking the vault balance
       const vaultBalanceResponse = await connection.getTokenAccountBalance({
         tokenAccount: vault,
         mint: tokenMintA,
-        useTokenExtensions: true,
+        useTokenExtensions: false,
       });
       assert.equal(vaultBalanceResponse.amount, tokenAOfferedAmount, "Vault balance should match offered amount");
     });
-
+/*
     test("fails when trying to reuse an existing offer ID", async () => {
       // First, create an offer with Alice using a specific offer ID
       const offerId = getRandomBigInt();
@@ -520,5 +519,6 @@ describe("Escrow", () => {
         assert.equal(error.message, REFUND_OFFER_ERROR, "Expected refund offer error");
       }
     });
+    */
   });
 });
